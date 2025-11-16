@@ -1,8 +1,8 @@
 // components/FileToChapter.tsx
-"use client" // Required for state and hooks
+"use client"
 import React, { useState, useEffect } from "react";
 
-// --- TYPES (Unchanged) ---
+// --- TYPES ---
 type ContentBlock = {
   type: "prose" | "code";
   content: string;
@@ -24,7 +24,7 @@ type Props = {
   filename?: string;
 };
 
-// --- PARSING LOGIC (Unchanged from V9) ---
+// --- PARSING LOGIC ---
 function slugify(s: string) {
   return s
     .toLowerCase()
@@ -156,12 +156,12 @@ function parseTextToSections(text: string): ParsedDoc {
   return { header: headerText, sections };
 }
 
-// --- REACT COMPONENT (V10 - Responsive UI) ---
+// --- REACT COMPONENT ---
 export default function FileToChapter({ rawText, filename }: Props) {
   const [parsed, setParsed] = useState<ParsedDoc | null>(null);
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   
-  // --- NEW: State for mobile TOC toggle ---
+  // --- State for mobile TOC toggle ---
   const [isTocOpen, setIsTocOpen] = useState(false);
 
   useEffect(() => {
@@ -174,7 +174,6 @@ export default function FileToChapter({ rawText, filename }: Props) {
     } else {
       setParsed(null);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawText]);
 
   if (!parsed) {
@@ -188,7 +187,7 @@ export default function FileToChapter({ rawText, filename }: Props) {
   return (
     <div className="font-sans max-w-6xl mx-auto text-gray-800 leading-relaxed">
       
-      {/* --- NEW: TOC Toggle Button (Mobile Only) --- */}
+      {/* --- TOC Toggle Button (Mobile Only) --- */}
       <button
         onClick={() => setIsTocOpen(!isTocOpen)}
         className="w-full px-4 py-2 mb-4 text-left font-semibold text-gray-700 bg-gray-100 border border-gray-200 rounded-lg md:hidden"
@@ -197,10 +196,8 @@ export default function FileToChapter({ rawText, filename }: Props) {
       </button>
 
       {/* --- Main Grid --- */}
-      {/* This handles the single-column on mobile (grid-cols-1) */}
       <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-8">
         
-        {/* Left: TOC (Now conditionally hidden on mobile) */}
         <aside 
           className={`
             ${isTocOpen ? 'block' : 'hidden'} md:block 
@@ -223,7 +220,7 @@ export default function FileToChapter({ rawText, filename }: Props) {
                   <button
                     onClick={() => {
                       setSelectedSection(s.id);
-                      setIsTocOpen(false); // NEW: Close menu on selection
+                      setIsTocOpen(false);
                     }}
                     className="w-full px-3 py-1.5 text-sm text-left text-gray-700 rounded-md transition-colors hover:bg-gray-100
                                  aria-current:bg-blue-50 aria-current:text-blue-600 aria-current:font-semibold"
@@ -237,7 +234,7 @@ export default function FileToChapter({ rawText, filename }: Props) {
           </div>
         </aside>
 
-        {/* Right: Section content (Conditionally hidden on mobile, fixes overflow) */}
+        {/* Right: Section content */}
         <main 
           className={`
             ${isTocOpen ? 'hidden' : 'block'} md:block
@@ -248,7 +245,6 @@ export default function FileToChapter({ rawText, filename }: Props) {
             if (s.id !== selectedSection) return null;
             return (
               <section key={s.id}>
-                {/* --- FIX: Added break-words for long headings --- */}
                 <h1 className="mt-0 mb-4 text-3xl font-bold text-gray-900 wrap-break-words">
                   {s.title}
                 </h1>
@@ -258,7 +254,6 @@ export default function FileToChapter({ rawText, filename }: Props) {
                     return (
                       <pre
                         key={index}
-                        // --- FIX: Has overflow-x-auto and whitespace-pre-wrap ---
                         className="p-4 mb-6 overflow-x-auto font-mono leading-relaxed text-gray-100 bg-gray-900 rounded-lg whitespace-pre-wrap"
                       >
                         {block.content}
@@ -268,7 +263,6 @@ export default function FileToChapter({ rawText, filename }: Props) {
                   return (
                     <div
                       key={index}
-                      // --- FIX: Added break-words for prose ---
                       className="mb-6 text-base text-gray-700 whitespace-pre-wrap wrap-break-words leading-relaxed"
                     >
                       {block.content}
